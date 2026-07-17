@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Closet — rent &amp; resale</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#f4efe6">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<script src="data.js"></script>
+<style>
+  @font-face {
+    font-family: "Playfair Display";
+    src: url("fonts/playfair-display.woff2") format("woff2");
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Playfair Display";
+    src: url("fonts/playfair-display-italic.woff2") format("woff2");
+    font-weight: 400 700;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Inter";
+    src: url("fonts/inter.woff2") format("woff2");
+    font-weight: 300 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  :root {
+    --paper: #f4efe6;
+    --card: #fbf8f2;
+    --ink: #1c1917;
+    --muted: #6b635d;
+    --line: #ddd5c7;
+    --champagne: #8a5406;
+    --sage: #4c6753;
+    --clay: #954a2f;
+    --display: "Playfair Display", "Didot", "Bodoni 72", ui-serif, Georgia, serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 14px; }
+  .label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+
+  header { text-align: center; padding: 54px 20px 30px; }
+  .wordmark { font-family: var(--display); font-style: italic; font-size: 44px; }
+  .tagline { margin-top: 10px; color: var(--muted); font-size: 13px; letter-spacing: 0.08em; }
+  .rule { width: 60px; height: 1px; background: var(--ink); margin: 26px auto 0; opacity: 0.5; }
+
+  .filters { display: flex; justify-content: center; gap: 8px; padding: 8px 20px 34px; flex-wrap: wrap; }
+  .chip {
+    border: 1px solid var(--line);
+    background: none;
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+  .chip.active { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .chip:hover { border-color: var(--ink); color: var(--ink); }
+  .chip.active:hover { color: var(--paper); }
+
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--champagne);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+  @media (max-width: 480px) {
+    .chip { padding: 12px 18px; }
+  }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 0 24px 90px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 30px 24px; }
+  .card { text-decoration: none; color: inherit; display: block; }
+  .photo {
+    aspect-ratio: 3 / 4;
+    background: var(--card);
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform .14s ease;
+  }
+  .card:hover .photo { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(28,25,23,0.08); }
+  .photo { transition: transform .18s ease, box-shadow .18s ease; }
+  .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ph-letter { font-family: var(--display); font-style: italic; font-size: 90px; color: rgba(29,24,32,0.16); }
+  .mode {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+  }
+  .mode.rent { color: var(--sage); }
+  .mode.sell { color: var(--clay); }
+  .card-body { padding: 14px 2px 0; text-align: center; }
+  .brand { margin-bottom: 5px; }
+  .name { font-family: var(--display); font-size: 19px; margin-bottom: 6px; }
+  .meta { color: var(--muted); font-size: 12px; margin-bottom: 7px; }
+  .price { font-size: 14px; }
+  .price b { color: var(--champagne); font-weight: 600; }
+  .price .orig { color: var(--muted); text-decoration: line-through; margin-left: 8px; font-size: 12px; }
+
+  .empty { text-align: center; color: var(--muted); font-family: var(--display); font-style: italic; font-size: 22px; padding: 80px 0; }
+  footer { text-align: center; padding: 40px 20px 60px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); }
+  footer a { color: var(--champagne); }
+
+  /* enquiry modal */
+  .overlay { position: fixed; inset: 0; background: rgba(29,24,32,0.45); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+  .overlay.open { display: flex; }
+  .modal { background: var(--card); border: 1px solid var(--line); max-width: 420px; width: 100%; padding: 34px 34px 30px; text-align: center; position: relative; }
+  .modal h2 { font-family: var(--display); font-size: 26px; margin: 6px 0 4px; }
+  .modal .meta { margin-bottom: 18px; }
+  .modal p { color: var(--muted); font-size: 13px; line-height: 1.6; margin-bottom: 22px; }
+  .btn {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 12px 26px;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: var(--sans);
+  }
+  .close-x { position: absolute; top: 10px; right: 14px; background: none; border: none; font-size: 22px; color: var(--muted); cursor: pointer; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="label">A private closet, opened</div>
+  <div class="wordmark">The Closet</div>
+  <div class="tagline">Loved pieces available to rent or buy secondhand.</div>
+  <div class="rule"></div>
+</header>
+
+<div class="filters" id="filters"></div>
+
+<main>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden>Nothing listed right now — check back soon.</div>
+</main>
+
+<footer>Curated on closetly · every piece authenticated by its owner ✦</footer>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+"use strict";
+let state = null;
+let filter = "all";
+const $ = (id) => document.getElementById(id);
+
+function fmtMoney(cents) {
+  if (cents == null || isNaN(cents)) return "—";
+  const d = cents / 100;
+  const opts = (cents % 100 === 0)
+    ? { maximumFractionDigits: 0 }
+    : { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+  return "$" + d.toLocaleString("en-US", opts);
+}
+
+function photoHTML(p, chip) {
+  if (p.photo) return `<div class="photo"><img src="photos/${p.photo}" alt="${p.name}" loading="lazy">${chip}</div>`;
+  return `<div class="photo"><span class="ph-letter">${(p.name || "?")[0]}</span>${chip}</div>`;
+}
+
+function listed() {
+  return state.pieces.filter(p => p.status === "rent" || p.status === "sell");
+}
+
+function render() {
+  const defs = [["all", "Everything"], ["rent", "To rent"], ["sell", "To buy"]];
+  $("filters").innerHTML = defs.map(([k, l]) =>
+    `<button class="chip ${filter === k ? "active" : ""}" onclick="setFilter('${k}')">${l}</button>`).join("");
+
+  let items = listed();
+  if (filter !== "all") items = items.filter(p => p.status === filter);
+  $("empty").hidden = items.length > 0;
+  $("grid").innerHTML = items.map(p => {
+    const chip = p.status === "rent"
+      ? `<span class="mode rent">For rent</span>`
+      : `<span class="mode sell">For sale</span>`;
+    const price = p.status === "rent"
+      ? `<b>${fmtMoney(p.rent_price_cents)}</b> / hire`
+      : `<b>${fmtMoney(p.sale_price_cents)}</b><span class="orig">${fmtMoney(p.purchase_price_cents)} retail</span>`;
+    return `<a class="card" href="#" onclick="openEnquiry('${p.id}');return false;">
+      ${photoHTML(p, chip)}
+      <div class="card-body">
+        <div class="label brand">${p.brand || ""}</div>
+        <div class="name">${p.name}</div>
+        <div class="meta">${[p.size ? "Size " + p.size : null, p.condition].filter(Boolean).join(" · ")}</div>
+        <div class="price">${price}</div>
+      </div>
+    </a>`;
+  }).join("");
+}
+function setFilter(k) { filter = k; render(); }
+
+function openEnquiry(id) {
+  const p = state.pieces.find(x => x.id === id);
+  const contact = (state.meta && state.meta.contact) || "";
+  const kind = p.status === "rent" ? "rent" : "buy";
+  const price = p.status === "rent" ? fmtMoney(p.rent_price_cents) + " per hire" : fmtMoney(p.sale_price_cents);
+  const subject = encodeURIComponent(`[The Closet] Enquiry: ${p.brand} ${p.name}`);
+  const body = encodeURIComponent(`Hi! I'd love to ${kind} the ${p.brand} ${p.name} (size ${p.size || "?"}, listed at ${price}).\n\nMy dates / questions:\n`);
+  $("modal").innerHTML = `
+    <button class="close-x" onclick="closeEnquiry()">×</button>
+    <div class="label">${p.status === "rent" ? "For rent" : "For sale"}</div>
+    <h2>${p.name}</h2>
+    <div class="meta">${p.brand}${p.size ? " · Size " + p.size : ""} · ${p.condition || ""}</div>
+    <p>${p.status === "rent"
+        ? `Hire this piece for <b>${fmtMoney(p.rent_price_cents)}</b> per event. Cleaned and pressed between every wear.`
+        : `Take it home for <b>${fmtMoney(p.sale_price_cents)}</b> — originally ${fmtMoney(p.purchase_price_cents)}.`}</p>
+    <a class="btn" href="mailto:${contact}?subject=${subject}&body=${body}">Enquire by email</a>`;
+  $("overlay").classList.add("open");
+}
+function closeEnquiry() { $("overlay").classList.remove("open"); }
+$("overlay").addEventListener("click", (e) => { if (e.target === $("overlay")) closeEnquiry(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeEnquiry(); });
+
+state = window.CLOSET;
+render();
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
