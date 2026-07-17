@@ -1,10 +1,22 @@
-# The Closet — static storefront
+# The Closet — shop + manager
 
-Public rent/resale storefront for the closetly app (the manager stays local).
+Public rent/resale storefront and client-side closet manager, on GitHub Pages.
 
-- Live: https://philduggan88.github.io/closetly/
-- Source of truth: `~/closetly` (shop.html + data/closet.json). This repo is a build artifact.
-- Refresh flow after changing listings locally:
-  1. `python3 ~/closetly/mobile/build.py`
-  2. commit + push this repo
-- `build.py` snapshots only listed pieces (status rent/sell) and public fields — notes, owner, and unlisted pieces never leave the laptop.
+- Shop (public): https://philduggan88.github.io/closetly/
+- Manager (Jasmine's): https://philduggan88.github.io/closetly/manage/
+  - Fully client-side: closet state lives in her browser's localStorage
+    (photos as data URLs), with Export/Import JSON for backup + moving devices.
+  - **Publish to shop** commits listed pieces (public fields only) + photos +
+    a cache-bumped sw.js straight to this repo via the GitHub Contents API,
+    using a fine-grained PAT (Contents read/write on this repo only) pasted
+    once into Settings.
+  - The manager page itself is public but holds no data — everything private
+    stays in her browser.
+
+## Source of truth
+
+Since 2026-07-17 the closet data is owned by the manager (Jasmine's browser).
+The original Mac-server app in `~/closetly` and its `build.py` flow still work
+but are legacy/bootstrap — don't push from the Mac unless you know her copy
+hasn't diverged. Seed/export files (`closet-export.json`) contain private data
+and must never be committed here.

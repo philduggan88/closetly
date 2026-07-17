@@ -1,0 +1,14 @@
+{
+  "name": "closetly — closet manager",
+  "short_name": "closetly",
+  "description": "Manage your closet: triage, rentals, and publishing to The Closet.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#131016",
+  "theme_color": "#131016",
+  "icons": [
+    { "src": "../icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "../icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
